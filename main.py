@@ -1,5 +1,6 @@
 #Python
 from datetime import datetime,date
+import json
 from typing import Optional, List
 from uuid import UUID
 
@@ -8,7 +9,7 @@ from pydantic import BaseModel, EmailStr,Field
 
 #FastApi
 
-from fastapi import FastAPI,status
+from fastapi import Body, FastAPI,status
 app = FastAPI()
 
 
@@ -30,7 +31,7 @@ class UserModel(UserBaseModel):
         max_length=20
         )
     birth_day: Optional[date] = Field(default=None)
-class UserRegistrer(UserBaseModel,BaseModel):  
+class UserRegistrer(UserModel,PasswordModel):  
     
     pass
 class Tweet(BaseModel):
@@ -58,13 +59,23 @@ class Tweet(BaseModel):
     summary="Register a User",
     tags=["Users"]
 )
-async def signup():
+async def signup(
+    user: UserRegistrer = Body(...)):
     """Signup register
     description:Register a User
     parameters: Request body parameters= User
     returns: Response Json with the basic information
     """
-    pass
+    with open("users.json", "r+", encoding="utf-8") as f:
+        results = json.load(f)
+        json.dump(results, f)
+        user_dic = user.dict()
+        user_dic["user_id"] = str(user_dic["user_id"])
+        user_dic["birth_date"] = str(user_dic["birth_date"])
+        results.append(user_dic)
+        f.seek(0)
+        f.write(json.dumps(results))
+        return user
 ### Login a User
 @app.post(
     path="/login",
