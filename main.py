@@ -48,7 +48,7 @@ class Tweet(BaseModel):
         max_length=256
     )
     created_at: datetime = Field(default=datetime.now())
-    update_at: Optional[datetime] = Field(default=None)
+    updated_at: Optional[datetime] = Field(default=None)
     by: UserModel = Field(...)
     
 
@@ -157,8 +157,30 @@ async def home():
     summary="Post a Tweet",
     tags=["Tweet"]
 )
-async def Post():
-    pass
+async def post(tweet: Tweet = Body(...)):
+    """Post a tweet
+    Parameters:
+    -
+    Returns a json with the basic tweet information:
+    -tweet_id: UUID
+    -content: str
+    -created_at: datetime
+    -update_at: Optional[datetime]
+    -by: UserModel
+    """
+    with open("tweets.json", "r+", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        tweet_dic = tweet.dict()
+        tweet_dic["tweet_id"] = str(tweet_dic["tweet_id"])
+        tweet_dic["created_at"] = str(tweet_dic["created_at"])
+        tweet_dic["updated_at"] = str(tweet_dic["updated_at"])
+        tweet_dic["by"]["user_id"] = str(tweet_dic["by"]["user_id"])
+        tweet_dic["by"]["birth_date"] = str(tweet_dic["by"]["birth_date"])
+        results.append(tweet_dic)
+        f.seek(0)
+        f.write(json.dumps(results))
+        return tweet
+    
 ### Show a Tweet
 @app.get(
     path="/tweets/{tweet_id}",

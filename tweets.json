@@ -1,1 +1,1 @@
-[]
+[{"tweet_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "content": "string", "created_at": "2023-02-16 14:14:00.170969", "updated_at": "2023-02-16 19:16:19.585000+00:00", "by": {"user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "email": "user@example.com", "first_name": "string", "last_name": "string", "birth_date": "2023-02-16"}}]
