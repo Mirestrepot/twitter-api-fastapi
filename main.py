@@ -28,9 +28,15 @@ class UserModel(UserBaseModel):
     first_name: str = Field(
         ...,
         min_length=1,
-        max_length=20
-        )
-    birth_day: Optional[date] = Field(default=None)
+        max_length=50
+    )
+    last_name: str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+    )
+    birth_date: Optional[date] = Field(default=None)
+    
 class UserRegistrer(UserModel,PasswordModel):  
     
     pass
@@ -88,14 +94,26 @@ async def Login():
     pass
 ### Show all the Users
 @app.get(
-    path="/Users",
+    path="/users",
     response_model=List[UserModel],
     status_code=status.HTTP_200_OK,
     summary="Show all users",
     tags=["Users"]
 )
 async def show_all_users():
-    pass
+    """Show_all_Users
+    Parameters: 
+    
+    Return: All Users 
+        -user_ID: UUID
+        -email: EmailStr
+        -first_name: Str
+        -last_name: Str
+        -birth_date: datetime
+    """
+    with open("users.json", "r", encoding="utf-8") as f: 
+        results = json.loads(f.read())
+        return results
 ### Show a User
 @app.get(
     path="/users/{user_id}",
