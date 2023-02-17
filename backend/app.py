@@ -2,9 +2,9 @@
 
 from fastapi import FastAPI
 
-from path.login import router as login_router
-from path.user import router as user_router
-from path.tweet import router as tweet_router
+from routers.login import router as login_router
+from routers.user import router as user_router
+from routers.tweet import router as tweet_router
 
 
 app = FastAPI()

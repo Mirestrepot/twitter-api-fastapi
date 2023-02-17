@@ -1,15 +1,19 @@
 #Python
 import json
 from typing import List
+from uuid import UUID
 
 #FastApi
 
 from fastapi import HTTPException, status
 from fastapi import APIRouter
 
+
 #Models
 from models.user import UserModel
-
+from db.database import db_client
+from db.schemas.user import user_schema, users_schema
+from utils.fuction import search_user
 
 router = APIRouter()
 
@@ -36,9 +40,8 @@ async def show_all_users():
         -last_name: Str
         -birth_date: datetime
     """
-    with open("users.json", "r", encoding="utf-8") as f: 
-        results = json.loads(f.read())
-        return results
+    return users_schema(db_client.users.find())
+    
     
 ### Show a User
 @router.get(
@@ -48,9 +51,8 @@ async def show_all_users():
     summary="Show a User",
     tags=["Users"]
 )
-async def show_a_user():
-    pass
-    # search_id(user_id)
+async def show_a_user(user_id: UUID):
+    return search_user(user_id)
 
 ### Delete a User
 @router.delete(
@@ -67,7 +69,6 @@ async def delete_a_user():
 
 def search_id(user_id):
 
-    pass
     database = "users.json"
     data = json.loads(open(database).read())
     try:
