@@ -1,5 +1,6 @@
 #Python
 from datetime import date
+import datetime
 from typing import Optional
 from uuid import UUID
 #Pydantic
@@ -11,7 +12,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 #Models
 class UserBaseModel(BaseModel):
-    user_id: UUID = Field(...)
+    id: str = Field(...)
     email: EmailStr = Field(...)
 class PasswordModel(BaseModel):
         password: str = Field(
@@ -31,7 +32,10 @@ class UserModel(UserBaseModel):
         min_length=1,
         max_length=50
     )
-    birth_date: Optional[date] = Field(default=None)
+    birth_date: Optional[date] = Field(default=None,
+                                       title='Birth date',
+                                       example='2021-01-01',)
+
     
 class UserRegistrer(UserModel,PasswordModel):  
     
