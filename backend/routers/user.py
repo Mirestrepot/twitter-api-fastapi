@@ -1,22 +1,26 @@
 #Python
 import json
 from typing import List
-from uuid import UUID
+
+from bson import ObjectId
+
+from utils.fuction import search_user
 
 #FastApi
 
 from fastapi import HTTPException, status
 from fastapi import APIRouter
-
+router = APIRouter()
 
 #Models
 from models.user import UserModel
-from db.database import db_client
 from db.schemas.user import user_schema, users_schema
-from utils.fuction import search_user
 
-router = APIRouter()
 
+
+#Db
+
+from db.database import db_client, find_one_user
 
 ##Users
 
@@ -45,15 +49,23 @@ async def show_all_users():
     
 ### Show a User
 @router.get(
-    path="/users/{user_id}",
+    path="/users/{id}",
     response_model=UserModel,
     status_code=status.HTTP_200_OK,
     summary="Show a User",
     tags=["Users"]
 )
-async def show_a_user(user_id: UUID):
-    return search_user(user_id)
+async def show_a_user(id: str):
+    """_summary_
+    63f3fce703f32c899751d86a
+    Args:
+        id (str): _description_
 
+    Returns:
+        id(str): User
+    """
+    return find_one_user("_id", ObjectId(id))
+    
 ### Delete a User
 @router.delete(
     path="/users/{user_id}/delete",
@@ -66,17 +78,3 @@ async def delete_a_user():
     pass
 
 
-
-def search_id(user_id):
-
-    database = "users.json"
-    data = json.loads(open(database).read())
-    try:
-        for i in data:
-            if i['user_id'] == user_id:
-                result = i['user_id']
-                return result
-    except KeyError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-        detail='User not found')
-            

@@ -2,7 +2,7 @@
 from datetime import date
 import datetime
 from typing import Optional
-from uuid import UUID
+
 #Pydantic
 from pydantic import BaseModel, EmailStr, Field
 
@@ -34,11 +34,10 @@ class UserModel(UserBaseModel):
     )
     birth_date: Optional[date] = Field(default=None,
                                        title='Birth date',
-                                       example='2021-01-01',)
+                                       example='2021-01-01')
 
     
 class UserRegistrer(UserModel,PasswordModel):  
-    
     pass
 
 class LoginRequest(PasswordModel):
