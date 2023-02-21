@@ -14,13 +14,12 @@ router = APIRouter()
 
 #Models
 from models.user import UserModel
-from db.schemas.user import user_schema, users_schema
 
 
 
 #Db
 
-from db.database import db_client, find_one_user
+from db.database import db_client, find_all_users, find_one_user
 
 ##Users
 
@@ -44,8 +43,8 @@ async def show_all_users():
         -last_name: Str
         -birth_date: datetime
     """
-    return users_schema(db_client.users.find())
-    
+    return find_all_users()
+
     
 ### Show a User
 @router.get(
