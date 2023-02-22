@@ -63,7 +63,10 @@ async def show_a_user(id: str):
     Returns:
         id(str): User
     """
-    return find_one_user("_id", ObjectId(id))
+    try:
+        return find_one_user("_id", ObjectId(id))
+    except:
+        raise HTTPException(status_code=404, detail="User not found") 
     
 ### Delete a User
 @router.delete(
