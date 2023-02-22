@@ -15,9 +15,9 @@ from fastapi.security import (
 
 #Models
 from models.user import LoginUser, UserModel, UserRegistrer
-from db.database import create_user, db_client
+from db.database import db_client
 from routers.auth_users import current_user
-from utils.fuction import search_user
+from utils.fuction import create_user, search_user
 
 router = APIRouter()
 

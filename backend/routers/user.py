@@ -4,7 +4,7 @@ from typing import List
 
 from bson import ObjectId
 
-from utils.fuction import search_user
+from utils.fuction import delete_one_user, find_all_users, find_one_user, search_user
 
 #FastApi
 
@@ -19,7 +19,7 @@ from models.user import UserModel
 
 #Db
 
-from db.database import db_client, find_all_users, find_one_user
+from db.database import db_client
 
 ##Users
 
@@ -66,17 +66,19 @@ async def show_a_user(id: str):
     try:
         return find_one_user("_id", ObjectId(id))
     except:
-        raise HTTPException(status_code=404, detail="User not found") 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid ID passed") 
     
 ### Delete a User
 @router.delete(
     path="/users/{user_id}/delete",
-    response_model=UserModel,
     status_code=status.HTTP_200_OK,
     summary="Delete a User",
     tags=["Users"]
 )
-async def delete_a_user():
-    pass
+async def delete_a_user(id: str):
+    try:
+        return delete_one_user("_id", ObjectId(id))
+    except:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid ID passed") 
 
 
