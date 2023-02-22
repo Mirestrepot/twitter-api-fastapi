@@ -5,13 +5,19 @@ import json
 
 #FastApi
 
-from fastapi import Body,status
+from fastapi import Body, Depends, HTTPException,status
 from fastapi import APIRouter
 from db.schemas.user import user_schema
+from fastapi.security import (
+    HTTPAuthorizationCredentials,HTTPBearer,
+    OAuth2,OAuth2PasswordBearer,
+    OAuth2PasswordRequestForm)
 
 #Models
-from models.user import UserModel, UserRegistrer
-from db.database import db_client
+from models.user import LoginUser, UserModel, UserRegistrer
+from db.database import create_user, db_client
+from routers.auth_users import current_user
+from utils.fuction import search_user
 
 router = APIRouter()
 
@@ -33,34 +39,12 @@ async def signup(
     parameters: Request body parameters= User
     returns: Response Json with the basic information
     """
-    
     user_dict = dict(user)
     del user_dict["id"]
-
     id = db_client.users.insert_one(user_dict).inserted_id
 
-    new_user = user_schema(db_client.users.find_one({"_id": id}))
+    new_user = create_user(id)
 
     return UserRegistrer(**new_user)
-    
-    
-    # with open("users.json", "r+", encoding="utf-8") as f:
-    #     results = json.load(f)
-    #     json.dump(results, f)
-    #     user_dic = user.dict()
-    #     user_dic["user_id"] = str(user_dic["user_id"])
-    #     user_dic["birth_date"] = str(user_dic["birth_date"])
-    #     results.append(user_dic)
-    #     f.seek(0)
-    #     f.write(json.dumps(results))
-    #     return user
-### Login a User
-@router.post(
-    path="/login",
-    response_model=UserModel,
-    status_code=status.HTTP_200_OK,
-    summary="Login a User",
-    tags=["Login"]
-)
-async def Login():
-    pass
+
+
