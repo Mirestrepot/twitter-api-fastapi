@@ -39,11 +39,9 @@ async def signup(
     parameters: Request body parameters= User
     returns: Response Json with the basic information
     """
-    user_dict = dict(user)
-    del user_dict["id"]
-    id = db_client.users.insert_one(user_dict).inserted_id
+    
 
-    new_user = create_user(id)
+    new_user = create_user(user)
 
     return UserRegistrer(**new_user)
 

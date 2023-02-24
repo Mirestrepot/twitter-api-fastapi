@@ -4,12 +4,16 @@ from typing import List
 
 #FastApi
 
-from fastapi import Body, status
+from fastapi import Body, HTTPException, status
 from fastapi import APIRouter
 from models.tweet import Tweet
 
 #Models
 
+#DB
+from db.database import db_client
+from db.schemas.tweet import tweet_schema,tweets_schema
+from models.user import UserRegistrer
 
 
 router = APIRouter()
@@ -48,7 +52,8 @@ async def home():
     summary="Post a Tweet",
     tags=["Tweet"]
 )
-async def post(tweet: Tweet = Body(...)):
+async def post(
+    tweet: Tweet = Body(...)):
     """Post a tweet
     Parameters:
     -
@@ -59,18 +64,24 @@ async def post(tweet: Tweet = Body(...)):
     -update_at: Optional[datetime]
     -by: UserModel
     """
-    with open("tweets.json", "r+", encoding="utf-8") as f:
-        results = json.loads(f.read())
-        tweet_dic = tweet.dict()
-        tweet_dic["tweet_id"] = str(tweet_dic["tweet_id"])
-        tweet_dic["created_at"] = str(tweet_dic["created_at"])
-        tweet_dic["updated_at"] = str(tweet_dic["updated_at"])
-        tweet_dic["by"]["user_id"] = str(tweet_dic["by"]["user_id"])
-        tweet_dic["by"]["birth_date"] = str(tweet_dic["by"]["birth_date"])
-        results.append(tweet_dic)
-        f.seek(0)
-        f.write(json.dumps(results))
-        return tweet
+    def create_tweet(tweet):
+        try:
+            dict_tweet = dict(tweet)
+            user = UserRegistrer(dict_tweet["by"])
+            user = db_client.users.find_one({user})
+            if user is None:
+                raise HTTPException(status_code=404, detail="User not found")
+            else:
+                
+                id = db_client.tweets.insert_one(dict(tweet)).inserted_id
+                new_tweet = tweet_schema(db_client.tweets.find_one({"_id": id}))
+            return new_tweet
+        except:
+            raise HTTPException(status_code=404, detail="Cannot create user")
+
+    return create_tweet(tweet)
+    
+
     
 ### Show a Tweet
 @router.get(
@@ -82,6 +93,9 @@ async def post(tweet: Tweet = Body(...)):
 )
 async def show_a_tweet():
     pass
+
+
+
 ### Delete a Tweet
 @router.delete(
     path="/tweets/{tweet_id}/delete",
