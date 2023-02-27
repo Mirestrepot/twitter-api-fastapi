@@ -1,10 +1,14 @@
+from db.schemas.user import user_schema
+
+
 def tweet_schema(tweet) -> dict:
+    user = tweet["by"]
     return {
-        "tweet_id": str(tweet["_id"]),
-        "content": tweet["content"],
+        "id": str(tweet["_id"]),
         "created_at": tweet["created_at"],
+        "content": tweet["content"],
         "updated_at": tweet["updated_at"],
-        "by": tweet["by"],
+        "by": user_schema(user)
     }
     
 def tweets_schema(tweet) -> list:

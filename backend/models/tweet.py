@@ -5,14 +5,14 @@ from typing import Optional
 #Pydantic
 from pydantic import BaseModel, Field
 
-from models.user import UserModel
+from models.user import UserModel, UserRegistrer
 
 #Models
 
 
 
 class Tweet(BaseModel):
-    tweet_id: str = Field(...)
+    id: str = Field(...)
     content: str = Field(
         ...,
         min_length=1,
@@ -20,7 +20,7 @@ class Tweet(BaseModel):
     )
     created_at: datetime = Field(default=datetime.now())
     updated_at: Optional[datetime] = Field(default=None)
-    by: UserModel = Field(...)
+    by: UserRegistrer = Field(...)
     
 
 
