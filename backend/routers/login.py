@@ -15,9 +15,9 @@ from fastapi.security import (
 
 #Models
 from models.user import LoginUser, UserModel, UserRegistrer
-from db.database import create_user, db_client
+from db.database import db_client
 from routers.auth_users import current_user
-from utils.fuction import search_user
+from utils.fuction import create_user, search_user
 
 router = APIRouter()
 
@@ -39,11 +39,9 @@ async def signup(
     parameters: Request body parameters= User
     returns: Response Json with the basic information
     """
-    user_dict = dict(user)
-    del user_dict["id"]
-    id = db_client.users.insert_one(user_dict).inserted_id
+    
 
-    new_user = create_user(id)
+    new_user = create_user(user)
 
     return UserRegistrer(**new_user)
 

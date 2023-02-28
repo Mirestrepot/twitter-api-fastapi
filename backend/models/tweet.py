@@ -1,18 +1,18 @@
 #Python
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
+
 #Pydantic
 from pydantic import BaseModel, Field
 
-from models.user import UserModel
+from models.user import UserModel, UserRegistrer
 
 #Models
 
 
 
 class Tweet(BaseModel):
-    tweet_id: UUID = Field(...)
+    id: str = Field(...)
     content: str = Field(
         ...,
         min_length=1,
@@ -20,12 +20,12 @@ class Tweet(BaseModel):
     )
     created_at: datetime = Field(default=datetime.now())
     updated_at: Optional[datetime] = Field(default=None)
-    by: UserModel = Field(...)
+    by: UserRegistrer = Field(...)
     
 
 
 class TweetUserID(BaseModel):
-    user_id: int = Field(...,
-    ge=1,
+    user_id: str = Field(...,
     title='User who created the tweet',
-    example=1,)
+
+    )
