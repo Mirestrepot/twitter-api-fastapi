@@ -1,22 +1,29 @@
 #Python
+import datetime
 import json
 from typing import List
+from bson import ObjectId
 
 #FastApi
-
-from fastapi import Body, status
+from fastapi import Body, HTTPException, status
 from fastapi import APIRouter
 from models.tweet import Tweet
-
+router = APIRouter()
 #Models
 
 
+#DB
+from db.database import db_client
+from db.schemas.tweet import tweet_schema,tweets_schema
+from models.user import UserRegistrer
 
-router = APIRouter()
+#utils
 
 
 
-##Teweets
+
+
+##Tweets
 
 ### Show all Tweets
 @router.get(
@@ -37,9 +44,16 @@ async def home():
         -update_at: Optional[datetime]
         -by: UserModel
     """
-    with open("tweets.json", "r", encoding="utf-8") as f: 
-        results = json.loads(f.read())
-        return results
+    def find_all_users():
+        try:
+            return tweets_schema(db_client.tweets.find())
+            
+        except:
+            raise HTTPException(status_code=404, detail="Users not found")
+        
+    return find_all_users()
+
+        
 ### Post a Tweet
 @router.post(
     path="/post",
@@ -48,7 +62,8 @@ async def home():
     summary="Post a Tweet",
     tags=["Tweet"]
 )
-async def post(tweet: Tweet = Body(...)):
+async def post(
+    tweet: Tweet = Body(...)):
     """Post a tweet
     Parameters:
     -
@@ -59,46 +74,74 @@ async def post(tweet: Tweet = Body(...)):
     -update_at: Optional[datetime]
     -by: UserModel
     """
-    with open("tweets.json", "r+", encoding="utf-8") as f:
-        results = json.loads(f.read())
-        tweet_dic = tweet.dict()
-        tweet_dic["tweet_id"] = str(tweet_dic["tweet_id"])
-        tweet_dic["created_at"] = str(tweet_dic["created_at"])
-        tweet_dic["updated_at"] = str(tweet_dic["updated_at"])
-        tweet_dic["by"]["user_id"] = str(tweet_dic["by"]["user_id"])
-        tweet_dic["by"]["birth_date"] = str(tweet_dic["by"]["birth_date"])
-        results.append(tweet_dic)
-        f.seek(0)
-        f.write(json.dumps(results))
-        return tweet
+    def create_tweet(tweet):
+        try:
+            dict_tweet = dict(tweet)
+            # tweet = db_client.tweets.find_one({dict_tweet})
+            # if tweet is None:
+            #     raise HTTPException(status_code=404, detail="Tweet not found")
+            # else:
+
+            id = db_client.tweets.insert_one(dict_tweet).inserted_id
+            dict_tweet["created_at"] = datetime.datetime.now()
+            new_tweet = tweet_schema(db_client.tweets.find_one({"_id": id}))
+            return new_tweet
+        except:
+            raise HTTPException(status_code=404, detail="Cannot be posted tweet")
+
+    return Tweet(create_tweet(tweet))
+    
+
     
 ### Show a Tweet
 @router.get(
-    path="/tweets/{tweet_id}",
+    path="/tweets/{id}",
     response_model=Tweet,
     status_code=status.HTTP_200_OK,
     summary="Show a Tweet",
     tags=["Tweet"]
 )
-async def show_a_tweet():
-    pass
+async def show_a_tweet(id: str):
+    """Show a Tweet
+    Args:
+        id (str): ObjectID
+
+    Returns:
+        dict: Tweet schema
+    """
+    def find_one_user(field: str,key):
+        try:    
+            tweet =  db_client.tweets.find_one({field: key})
+            return Tweet(**tweet_schema(tweet))
+        except:
+            raise HTTPException(status_code=404, detail="User not found") 
+    try:
+        return find_one_user("_id", ObjectId(id))
+    except:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid ID passed") 
+
+
+
 ### Delete a Tweet
 @router.delete(
-    path="/tweets/{tweet_id}/delete",
+    path="/tweets/{id}/delete",
     response_model=Tweet,
     status_code=status.HTTP_200_OK,
     summary="Delete a Tweet",
     tags=["Tweet"]
 )
-async def delete_a_tweet():
-    pass
+async def delete_a_tweet(id: str):
+    found_response = db_client.tweets.find_one_and_delete({"_id": ObjectId(id)})
+
+    if not found_response:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="ID not found") 
 ### Update a Tweet
 @router.put(
-    path="/tweets/{tweet_id}/update",
+    path="/tweets/{id}/update",
     response_model=Tweet,
     status_code=status.HTTP_200_OK,
     summary="Update a Tweet",
     tags=["Tweet"]
 )
-async def update_a_tweet():
+async def update_a_tweet(id: str):
     pass

@@ -42,6 +42,7 @@ async def current_user(token: str = Depends(oauth2)):
     tags=["Login"]
 )
 async def Login(form: OAuth2PasswordRequestForm = Depends()):
+    pass
     username = form.username
     asdf = []
     user_db = db_client.users.find_one({username: str})  #search_user(form.username)

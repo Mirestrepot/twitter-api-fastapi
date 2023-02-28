@@ -2,6 +2,7 @@
 from datetime import date
 
 from typing import Optional
+from bson import ObjectId
 
 #Pydantic
 from pydantic import BaseModel, EmailStr, Field
@@ -15,7 +16,7 @@ class UserBaseModel(BaseModel):
     username: str = Field(...,
                           title="Username",
                           example="username123")
-    id: str = Field(...)
+    id: str = Field(...)   
     email: EmailStr = Field(...)
 class PasswordModel(BaseModel):
         password: str = Field(
