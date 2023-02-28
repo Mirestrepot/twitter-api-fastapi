@@ -7,18 +7,19 @@ from bson import ObjectId
 #FastApi
 from fastapi import Body, HTTPException, status
 from fastapi import APIRouter
-from models.tweet import Tweet
+from db.schemas.user import user_schema
+
 router = APIRouter()
 #Models
-
-
+from models.user import UserBaseModel, UserModel, UserRegistrer
+from models.tweet import BaseTweet, Tweet
 #DB
 from db.database import db_client
 from db.schemas.tweet import tweet_schema,tweets_schema
-from models.user import UserRegistrer
+
 
 #utils
-
+from utils.fuction import find_one_user, user_on
 
 
 
@@ -28,7 +29,7 @@ from models.user import UserRegistrer
 ### Show all Tweets
 @router.get(
     path='/',
-    response_model=List[Tweet],
+    response_model= List[Tweet],
     status_code=200,
     summary="Show all Tweets",
     tags=["Tweet"]
@@ -44,52 +45,50 @@ async def home():
         -update_at: Optional[datetime]
         -by: UserModel
     """
-    def find_all_users():
-        try:
-            return tweets_schema(db_client.tweets.find())
-            
-        except:
-            raise HTTPException(status_code=404, detail="Users not found")
+
+    try:
+        return tweets_schema(db_client.tweets.find())
         
-    return find_all_users()
+    except:
+        pass
+        # raise HTTPException(status_code=404, detail="Users not found")
+    
+
 
         
 ### Post a Tweet
 @router.post(
     path="/post",
-    response_model=Tweet,
+    response_model= Tweet,
     status_code=status.HTTP_201_CREATED,
     summary="Post a Tweet",
     tags=["Tweet"]
 )
 async def post(
-    tweet: Tweet = Body(...)):
+    tweet: BaseTweet = Body(...)):
     """Post a tweet
     Parameters:
     -
     Returns a json with the basic tweet information:
-    -tweet_id: UUID
+    -id: ObjectId
     -content: str
     -created_at: datetime
     -update_at: Optional[datetime]
-    -by: UserModel
+    -by: ObjectId the user that created the tweet
     """
-    def create_tweet(tweet):
-        try:
-            dict_tweet = dict(tweet)
-            # tweet = db_client.tweets.find_one({dict_tweet})
-            # if tweet is None:
-            #     raise HTTPException(status_code=404, detail="Tweet not found")
-            # else:
-
-            id = db_client.tweets.insert_one(dict_tweet).inserted_id
-            dict_tweet["created_at"] = datetime.datetime.now()
-            new_tweet = tweet_schema(db_client.tweets.find_one({"_id": id}))
-            return new_tweet
-        except:
-            raise HTTPException(status_code=404, detail="Cannot be posted tweet")
-
-    return Tweet(create_tweet(tweet))
+    dict_tweet = dict(tweet)
+    try:
+        current_user = user_on(dict_tweet["user_id"])
+        dict_tweet["by"] = current_user.username
+        dict_tweet["created_at"] = datetime.datetime.now()
+        dict_tweet["updated_at"] = None
+        dict_tweet["user_id"] = current_user.id
+        id = db_client.tweets.insert_one(dict_tweet).inserted_id
+        new_tweet = tweet_schema(db_client.tweets.find_one({"_id": id}))
+    except:
+        pass
+        # raise HTTPException(status_code=404, detail="Tweet not found")
+    return (Tweet(**new_tweet))
     
 
     
@@ -125,16 +124,17 @@ async def show_a_tweet(id: str):
 ### Delete a Tweet
 @router.delete(
     path="/tweets/{id}/delete",
-    response_model=Tweet,
     status_code=status.HTTP_200_OK,
     summary="Delete a Tweet",
     tags=["Tweet"]
 )
 async def delete_a_tweet(id: str):
-    found_response = db_client.tweets.find_one_and_delete({"_id": ObjectId(id)})
+    try:
+        db_client.tweets.find_one_and_delete({"_id": ObjectId(id)})
+    except: 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="NOT FOUND")
+    return HTTPException(status_code=status.HTTP_204_NO_CONTENT, detail="Id is deleted successfully")
 
-    if not found_response:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="ID not found") 
 ### Update a Tweet
 @router.put(
     path="/tweets/{id}/update",

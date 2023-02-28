@@ -1,3 +1,4 @@
+from bson import ObjectId
 from fastapi import HTTPException,status
 
 
@@ -22,13 +23,13 @@ def find_one_user(field: str,key):
         user =  db_client.users.find_one({field: key})
         return UserModel(**user_schema(user))
     except:
-        raise HTTPException(status_code=404, detail="User not found") 
+        raise HTTPException(status_code=404, detail="User not found1") 
 
 def find_all_users():
     try:
         return users_schema(db_client.users.find())
     except:
-        raise HTTPException(status_code=404, detail="Users not found")
+        raise HTTPException(status_code=404, detail="Users not found2")
     
 def delete_one_user(field: str,key):
     pass
@@ -54,3 +55,6 @@ def create_user(user):
         #                     detail='You are not allowed to perform this action')
         
 
+def user_on(id: str) -> UserModel:
+    user = find_one_user("_id", ObjectId(id))  
+    return user

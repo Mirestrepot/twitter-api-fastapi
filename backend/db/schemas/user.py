@@ -8,6 +8,8 @@ def user_schema(user) -> dict:
         "username": user["username"],
         "password": user["password"]
     }
+
     
-def users_schema(user) -> list:
-    return [user_schema(user) for user in user]
+def users_schema(users) -> list:
+    return [user_schema(user) for user in users]
+

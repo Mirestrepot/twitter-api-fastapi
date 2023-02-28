@@ -1,15 +1,15 @@
 from db.schemas.user import user_schema
 
-
 def tweet_schema(tweet) -> dict:
-    user = tweet["by"]
+
     return {
         "id": str(tweet["_id"]),
-        "created_at": tweet["created_at"],
         "content": tweet["content"],
         "updated_at": tweet["updated_at"],
-        "by": user_schema(user)
+        "created_at": tweet["created_at"],
+        "by": tweet["by"],
+        "user_id": tweet["user_id"],
     }
     
-def tweets_schema(tweet) -> list:
-    return [tweet_schema(tweet) for tweet in tweet]
+def tweets_schema(tweets) -> list:
+    return [tweet_schema(tweet) for tweet in tweets]

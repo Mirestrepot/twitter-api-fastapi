@@ -45,4 +45,3 @@ class UserRegistrer(UserModel,PasswordModel):
 class LoginUser(PasswordModel):
     email: EmailStr = Field(...,)
 
-
