@@ -1,0 +1,25 @@
+version: "3.11"
+services:
+  app:
+    container_name: fastapi-container
+    build: .
+    ports:
+      - "80.80"
+    depends_on: 
+      - db
+
+    
+  # mongodb:
+  #   image: mongo:latest
+  #   ports:
+  #     - 27017:27017
+  #   networks:
+  #     mynetwork:
+  #       aliases:
+  #         - mongodb-service
+  #   volumes:
+  #     - vol-mongo-db:/mongo/db
+  #     - vol-mongo-configdb:/mongo/configdb
+  #docker tag backend mirestrepot/twitter-api-fastapi
+  #docker push mirestrepot/twitter-api-fastapi:tagname
+  #dckr_pat_8JurmLtS6T6clgau8cZ9757z_DA
