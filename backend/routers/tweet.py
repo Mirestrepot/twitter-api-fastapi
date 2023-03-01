@@ -94,7 +94,7 @@ async def post(
     
 ### Show a Tweet
 @router.get(
-    path="/tweets/{id}",
+    path="/{id}",
     response_model=Tweet,
     status_code=status.HTTP_200_OK,
     summary="Show a Tweet",
@@ -123,7 +123,7 @@ async def show_a_tweet(id: str):
 
 ### Delete a Tweet
 @router.delete(
-    path="/tweets/{id}/delete",
+    path="/{id}",
     status_code=status.HTTP_200_OK,
     summary="Delete a Tweet",
     tags=["Tweet"]
@@ -137,7 +137,7 @@ async def delete_a_tweet(id: str):
 
 ### Update a Tweet
 @router.put(
-    path="/tweets/{id}/update",
+    path="/{id}",
     response_model=Tweet,
     status_code=status.HTTP_200_OK,
     summary="Update a Tweet",

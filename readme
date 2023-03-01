@@ -15,4 +15,4 @@ Date Base: username: mirestrepot
 Main = Run Server
  
 
-http://localhost/docs
+Docker repository = https://hub.docker.com/repository/docker/mirestrepot/twitter-api-fastapi/general
