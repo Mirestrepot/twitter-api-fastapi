@@ -1,2 +1,18 @@
-MondoUser = mirestrepot
-            6I1pFaW67Ae2oO7I
+
+.\venv\Scripts\activate
+pip install -r requirements.txt
+
+
+Date Base: username: mirestrepot    
+            password: JCaCLq8ENMyCRIZJ
+
+    Mongo in VS: mongodb+srv://mirestrepot:JCaCLq8ENMyCRIZJ@twitterapi.tixzlnu.mongodb.net/test
+
+    MongoDB compass: mongodb+srv://mirestrepot:JCaCLq8ENMyCRIZJ@twitterapi.tixzlnu.mongodb.net/test
+
+
+
+Main = Run Server
+ 
+
+http://localhost/docs

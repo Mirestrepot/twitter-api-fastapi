@@ -28,7 +28,7 @@ from utils.fuction import find_one_user, user_on
 
 ### Show all Tweets
 @router.get(
-    path='/',
+    path='/home',
     response_model= List[Tweet],
     status_code=200,
     summary="Show all Tweets",
