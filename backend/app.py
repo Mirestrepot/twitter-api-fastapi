@@ -14,6 +14,10 @@ app = FastAPI()
 async def root():
     return RedirectResponse(url ="/docs")
 
+@app.get('/examples')
+async def example():
+    return ("example return")
+
 app.include_router(login_router, prefix='/login')
 app.include_router(user_router, prefix='/user')
 app.include_router(tweet_router, prefix='/tweet')

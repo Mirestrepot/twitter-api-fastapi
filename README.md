@@ -45,6 +45,7 @@ Now you can access the API at http://localhost/docs. This will open the FastAPI 
 You need to download the docker documentation and use it to fetch the docker repository. "https://docs.docker.com/engine/reference/commandline/pull/"
 ```bash
 docker pull mirestrepot/twitter-api-fastapi
+docker run --name app1 -p 80:80 -d mirestrepot/twitter-api-fastapi:latest
 ```
 ## Project Structure
 ```bash
