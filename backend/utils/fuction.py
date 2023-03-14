@@ -41,11 +41,14 @@ def create_user(user):
     try:
         user_dict = dict(user)
         del user_dict["id"]
+
         id = db_client.users.insert_one(user_dict).inserted_id
         new_user = user_schema(db_client.users.find_one({"_id": id}))
+
+        
         return new_user
     except:
-        raise HTTPException(status_code=404, detail="Cannot create user")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cannot create user")
     
 
 
@@ -58,3 +61,4 @@ def create_user(user):
 def user_on(id: str) -> UserModel:
     user = find_one_user("_id", ObjectId(id))  
     return user
+
