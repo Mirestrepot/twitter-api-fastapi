@@ -39,9 +39,12 @@ class UserModel(UserBaseModel):
                                        title='Birth date',
                                        example='2021-01-01',)
     
-class UserRegistrer(UserModel,PasswordModel):  
+class UserRegistrer(UserModel,PasswordModel): 
+     
     pass
 
 class LoginUser(PasswordModel):
-    email: EmailStr = Field(...,)
+    username: str = Field(...,)
 
+class UserSignup(UserRegistrer):
+    username: UserRegistrer
